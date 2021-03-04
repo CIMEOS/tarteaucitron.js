@@ -1797,7 +1797,7 @@ var tarteaucitron = {
          Utility function to Add or update the fields of obj1 with the ones in obj2
          */
         for(key in custom){
-            if(custom[key] instanceof Object){
+            if(custom[key] instanceof Object) {
                 source[key] = tarteaucitron.AddOrUpdate(source[key], custom[key]);
             }else{
                 source[key] = custom[key];
@@ -1810,6 +1810,9 @@ var tarteaucitron = {
     },
     "getElemHeight": function(elem) {
         return elem.getAttribute('height') || elem.clientHeight;
+    },
+    "getElemAttr": function (elem, attr) {
+        return elem.getAttribute('data-' + attr) || elem.getAttribute(attr);
     },
     "addClickEventToId": function (elemId, func) {
         tarteaucitron.addClickEventToElement(document.getElementById(elemId), func);

@@ -2729,13 +2729,13 @@ tarteaucitron.services.youtube = {
     "js": function () {
         "use strict";
         tarteaucitron.fallback(['youtube_player'], function (x) {
-            var video_id = x.getAttribute("data-videoID"),
-                video_width = x.getAttribute("data-width"),
+            var video_id = tarteaucitron.getElemAttr(x, 'videoID'),
+                video_width = tarteaucitron.getElemAttr(x, 'width'),
                 frame_width = 'width=',
-                video_height = x.getAttribute("data-height"),
+                video_height = tarteaucitron.getElemAttr(x, 'height'),
                 frame_height = 'height=',
                 video_frame,
-                params = 'theme=' + x.getAttribute("data-theme") + '&rel=' + x.getAttribute("data-rel") + '&controls=' + x.getAttribute("data-controls") + '&showinfo=' + x.getAttribute("data-showinfo") + '&autoplay=' + x.getAttribute("data-autoplay") + '&mute=' + x.getAttribute("data-mute");
+                params = 'theme=' + tarteaucitron.getElemAttr(x, 'theme') + '&rel=' + tarteaucitron.getElemAttr(x, 'rel') + '&controls=' + tarteaucitron.getElemAttr(x, 'controls') + '&showinfo=' + tarteaucitron.getElemAttr(x, 'showinfo') + '&autoplay=' + tarteaucitron.getElemAttr(x, 'autoplay') + '&mute=' + tarteaucitron.getElemAttr(x, 'mute');
 
             if (video_id === undefined) {
                 return "";
@@ -2758,8 +2758,8 @@ tarteaucitron.services.youtube = {
         "use strict";
         var id = 'youtube';
         tarteaucitron.fallback(['youtube_player'], function (elem) {
-            elem.style.width = elem.getAttribute('data-width') + 'px';
-            elem.style.height = elem.getAttribute('data-height') + 'px';
+            elem.style.width = tarteaucitron.getElemAttr(elem, 'width') + 'px';
+            elem.style.height = tarteaucitron.getElemAttr(elem, 'height') + 'px';
             return tarteaucitron.engage(id);
         });
     }
@@ -2776,13 +2776,13 @@ tarteaucitron.services.youtubeplaylist = {
     "js": function () {
         "use strict";
         tarteaucitron.fallback(['youtube_playlist_player'], function (x) {
-            var playlist_id = x.getAttribute("data-playlistID"),
-                video_width = x.getAttribute("data-width"),
+            var playlist_id = tarteaucitron.getElemAttr(x, 'playlistID'),
+                video_width = tarteaucitron.getElemAttr(x, 'width'),
                 frame_width = 'width=',
-                video_height = x.getAttribute("data-height"),
+                video_height = tarteaucitron.getElemAttr(x, 'height'),
                 frame_height = 'height=',
                 video_frame,
-                params = 'theme=' + x.getAttribute("data-theme") + '&rel=' + x.getAttribute("data-rel") + '&controls=' + x.getAttribute("data-controls") + '&showinfo=' + x.getAttribute("data-showinfo") + '&autoplay=' + x.getAttribute("data-autoplay") + '&mute=' + x.getAttribute("data-mute");
+                params = 'theme=' + tarteaucitron.getElemAttr(x, 'theme') + '&rel=' + tarteaucitron.getElemAttr(x, 'rel') + '&controls=' + tarteaucitron.getElemAttr(x, 'controls') + '&showinfo=' + tarteaucitron.getElemAttr(x, 'showinfo') + '&autoplay=' + tarteaucitron.getElemAttr(x, 'autoplay') + '&mute=' + tarteaucitron.getElemAttr(x, 'mute');
 
             if (playlist_id === undefined) {
                 return "";
@@ -2805,8 +2805,8 @@ tarteaucitron.services.youtubeplaylist = {
         "use strict";
         var id = 'youtubeplaylist';
         tarteaucitron.fallback(['youtube_playlist_player'], function (elem) {
-            elem.style.width = elem.getAttribute('data-width') + 'px';
-            elem.style.height = elem.getAttribute('data-height') + 'px';
+            elem.style.width = tarteaucitron.getElemAttr(elem, 'width') + 'px';
+            elem.style.height = tarteaucitron.getElemAttr(elem, 'height') + 'px';
             return tarteaucitron.engage(id);
         });
     }
