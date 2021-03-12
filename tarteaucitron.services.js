@@ -30,6 +30,126 @@ tarteaucitron.services.iframe = {
     }
 };
 
+// xandr
+tarteaucitron.services.xandr = {
+    "key": "xandr",
+    "type": "ads",
+    "name": "Xandr",
+    "uri": "https://www.xandr.com/privacy/cookie-policy/",
+    "needConsent": true,
+    "cookies": ['uuid2', 'uids', 'sess', 'icu', 'anj', 'usersync'],
+    "js": function () {
+        "use strict";
+        if (tarteaucitron.user.xandrId === undefined) {
+            return;
+        }
+
+        if (!window.pixie) {
+            var n = window.pixie = function(e, i, a) {
+                n.actionQueue.push({
+                    action: e,
+                    actionValue: i,
+                    params: a
+                })
+            };
+            n.actionQueue = [];
+        }
+
+        tarteaucitron.addScript('https://acdn.adnxs.com/dmp/up/pixie.js', '', function() {
+            window.pixie('init', tarteaucitron.user.xandrId);
+            window.pixie('event', 'PageView');
+        });
+    }
+};
+
+// helloasso
+tarteaucitron.services.helloasso = {
+    "key": "helloasso",
+    "type": "api",
+    "name": "HelloAsso",
+    "uri": "https://www.helloasso.com/confidentialite",
+    "needConsent": true,
+    "cookies": [],
+    "js": function () {
+        "use strict";
+        tarteaucitron.fallback(['tac_helloasso'], function (x) {
+            var width = x.getAttribute("width"),
+                height = x.getAttribute("height"),
+                url = x.getAttribute("data-url");
+
+            return '<iframe id="haWidget" src="' + url + '" width="' + width + '" height="' + height + '" frameborder="0" scrolling="auto" allowtransparency allowfullscreen></iframe>';
+        });
+    },
+    "fallback": function () {
+        "use strict";
+        var id = 'helloasso';
+        tarteaucitron.fallback(['tac_helloasso'], function (elem) {
+            elem.style.width = elem.getAttribute('width') + 'px';
+            elem.style.height = elem.getAttribute('height') + 'px';
+            return tarteaucitron.engage(id);
+        });
+    }
+};
+
+// podcloud
+tarteaucitron.services.podcloud = {
+    "key": "podcloud",
+    "type": "video",
+    "name": "podCloud",
+    "uri": "https://podcloud.fr/privacy",
+    "needConsent": true,
+    "cookies": [],
+    "js": function () {
+        "use strict";
+        tarteaucitron.fallback(['tac_podcloud'], function (x) {
+            var width = x.getAttribute("width"),
+                height = x.getAttribute("height"),
+                url = x.getAttribute("data-url");
+
+            return '<iframe src="' + url + '" width="' + width + '" height="' + height + '" frameborder="0" scrolling="auto" allowtransparency allowfullscreen></iframe>';
+        });
+    },
+    "fallback": function () {
+        "use strict";
+        var id = 'podcloud';
+        tarteaucitron.fallback(['tac_podcloud'], function (elem) {
+            elem.style.width = elem.getAttribute('width') + 'px';
+            elem.style.height = elem.getAttribute('height') + 'px';
+            return tarteaucitron.engage(id);
+        });
+    }
+};
+
+// facebookpost
+tarteaucitron.services.facebookpost = {
+    "key": "facebookpost",
+    "type": "social",
+    "name": "Facebook (post)",
+    "uri": "https://www.facebook.com/policy.php",
+    "needConsent": true,
+    "cookies": [],
+    "js": function () {
+        "use strict";
+        tarteaucitron.fallback(['tac_facebookpost'], function (x) {
+            var width = x.getAttribute("width"),
+                height = x.getAttribute("height"),
+                url = x.getAttribute("data-url"),
+                appId = x.getAttribute("data-appid");
+
+            return '<iframe src="https://www.facebook.com/plugins/post.php?href=' + encodeURIComponent(url) + '&amp;width=' + width + '&amp;show_text=false&amp;appId=' + appId + '&amp;height=' + height + '" width="' + width + '" height="' + height + '" frameborder="0" scrolling="auto" allowtransparency allowfullscreen></iframe>';
+        });
+    },
+    "fallback": function () {
+        "use strict";
+        var id = 'facebookpost';
+        tarteaucitron.fallback(['tac_facebookpost'], function (elem) {
+            elem.style.width = elem.getAttribute('width') + 'px';
+            elem.style.height = elem.getAttribute('height') + 'px';
+            return tarteaucitron.engage(id);
+        });
+    }
+};
+
 // amplitude
 tarteaucitron.services.amplitude = {
     "key": "amplitude",
@@ -689,6 +809,7 @@ tarteaucitron.services.dailymotion = {
                 video_height = x.getAttribute("height"),
                 frame_height = 'height=',
                 video_frame,
+                embed_type = x.getAttribute("embedType"),
                 params = 'info=' + x.getAttribute("showinfo") + '&autoPlay=' + x.getAttribute("autoplay");
 
             if (video_id === undefined) {
@@ -704,7 +825,10 @@ tarteaucitron.services.dailymotion = {
             } else {
                 frame_height += '"" ';
             }
-            video_frame = '<iframe src="//www.dailymotion.com/embed/video/' + video_id + '?' + params + '" ' + frame_width + frame_height + ' frameborder="0" allowfullscreen></iframe>';
+            if (embed_type === undefined || !['video', 'playlist'].includes(embed_type) ) {
+                embed_type = "video";
+            }
+            video_frame = '<iframe src="//www.dailymotion.com/embed/' + embed_type + '/' + video_id + '?' + params + '" ' + frame_width + frame_height + ' frameborder="0" allowfullscreen></iframe>';
             return video_frame;
         });
     },
@@ -809,6 +933,70 @@ tarteaucitron.services.datingaffiliationpopup = {
     }
 };
 
+// deezer
+tarteaucitron.services.deezer = {
+    "key": "deezer",
+    "type": "video",
+    "name": "Deezer",
+    "uri": "https://www.deezer.com/legal/personal-datas",
+    "needConsent": true,
+    "cookies": [],
+    "js": function () {
+        "use strict";
+        tarteaucitron.fallback(['deezer_player'], function (x) {
+            var deezer_id = x.getAttribute("deezerID"),
+                deezer_width = x.getAttribute("width"),
+                frame_width = 'width=',
+                deezer_height = x.getAttribute("height"),
+                frame_height = 'height=',
+                deezer_frame,
+                embed_theme = x.getAttribute("theme"),
+                embed_type = x.getAttribute("embedType"),
+                radius = x.getAttribute("radius"),
+                tracklist = x.getAttribute("tracklist"),
+                params;
+
+            if (deezer_id === undefined) {
+                return "";
+            }
+            if (deezer_width !== undefined) {
+                frame_width += '"' + deezer_width + '" ';
+            } else {
+                frame_width += '"" ';
+            }
+            if (deezer_height !== undefined) {
+                frame_height +=  '"' + deezer_height + '" ';
+            } else {
+                frame_height += '"" ';
+            }
+            if (embed_theme === undefined || !['auto', 'light', 'dark'].includes(embed_theme) ) {
+                embed_theme = "auto";
+            }
+            if (embed_type === undefined || !['album', 'track', 'playlist'].includes(embed_type) ) {
+                embed_type = "album";
+            }
+            if (radius === undefined || !['true', 'false'].includes(radius) ) {
+                radius = "true";
+            }
+            if (tracklist === undefined || !['true', 'false'].includes(tracklist) ) {
+                tracklist = "true";
+            }
+            params = 'tracklist=' + tracklist + '&radius=' + radius;
+            deezer_frame = '<iframe src="//widget.deezer.com/widget/' + embed_theme + '/' + embed_type + '/' + deezer_id + '?' + params + '" ' + frame_width + frame_height + ' frameborder="0" allowfullscreen></iframe>';
+            return deezer_frame;
+        });
+    },
+    "fallback": function () {
+        "use strict";
+        var id = 'deezer';
+        tarteaucitron.fallback(['deezer_player'], function (elem) {
+            elem.style.width = elem.getAttribute('width') + 'px';
+            elem.style.height = elem.getAttribute('height') + 'px';
+            return tarteaucitron.engage(id);
+        });
+    }
+};
+
 // leadforensics
 tarteaucitron.services.leadforensics = {
     "key": "leadforensics",
@@ -905,7 +1093,7 @@ tarteaucitron.services.facebook = {
     "key": "facebook",
     "type": "social",
     "name": "Facebook",
-    "uri": "https://www.facebook.com/policies/cookies/",
+    "uri": "https://www.facebook.com/policy.php",
     "needConsent": true,
     "cookies": [],
     "js": function () {
@@ -930,7 +1118,7 @@ tarteaucitron.services.facebooklikebox = {
     "key": "facebooklikebox",
     "type": "social",
     "name": "Facebook (like box)",
-    "uri": "https://www.facebook.com/policies/cookies/",
+    "uri": "https://www.facebook.com/policy.php",
     "needConsent": true,
     "cookies": [],
     "js": function () {
@@ -955,7 +1143,7 @@ tarteaucitron.services.facebookcomment = {
     "key": "facebookcomment",
     "type": "comment",
     "name": "Facebook (commentaire)",
-    "uri": "https://www.facebook.com/policies/cookies/",
+    "uri": "https://www.facebook.com/policy.php",
     "needConsent": true,
     "cookies": [],
     "js": function () {
@@ -990,6 +1178,27 @@ tarteaucitron.services.ferank = {
                 tarteaucitron.user.ferankMore();
             }
         });
+    }
+};
+
+// pingdom
+tarteaucitron.services.pingdom = {
+    "key": "pingdom",
+    "type": "api",
+    "name": "Pingdom",
+    "uri": "https://www.solarwinds.com/general-data-protection-regulation-cloud",
+    "needConsent": true,
+    "cookies": [],
+    "js": function () {
+        "use strict";
+
+        if (tarteaucitron.user.pingdomId === undefined) {
+            return;
+        }
+
+        window._prum = [['id', tarteaucitron.user.pingdomId], ['mark', 'firstbyte', (new Date()).getTime()]];
+
+        tarteaucitron.addScript('https://rum-static.pingdom.net/prum.min.js');
     }
 };
 
@@ -1264,7 +1473,7 @@ tarteaucitron.services.gajs = {
     "key": "gajs",
     "type": "analytic",
     "name": "Google Analytics (ga.js)",
-    "uri": "https://support.google.com/analytics/answer/6004245",
+    "uri": "https://policies.google.com/privacy",
     "needConsent": true,
     "cookies": (function () {
         var googleIdentifier = tarteaucitron.user.gajsUa,
@@ -1304,7 +1513,7 @@ tarteaucitron.services.analytics = {
     "key": "analytics",
     "type": "analytic",
     "name": "Google Analytics (universal)",
-    "uri": "https://support.google.com/analytics/answer/6004245",
+    "uri": "https://policies.google.com/privacy",
     "needConsent": true,
     "cookies": (function () {
         var googleIdentifier = tarteaucitron.user.analyticsUa,
@@ -1355,7 +1564,7 @@ tarteaucitron.services.gtag = {
     "key": "gtag",
     "type": "analytic",
     "name": "Google Analytics (gtag.js)",
-    "uri": "https://support.google.com/analytics/answer/6004245",
+    "uri": "https://policies.google.com/privacy",
     "needConsent": true,
     "cookies": (function () {
         var googleIdentifier = tarteaucitron.user.gtagUa,
@@ -1387,7 +1596,7 @@ tarteaucitron.services.googlemaps = {
     "key": "googlemaps",
     "type": "api",
     "name": "Google Maps",
-    "uri": "https://adssettings.google.com/",
+    "uri": "https://policies.google.com/privacy",
     "needConsent": true,
     "cookies": [],
     "js": function () {
@@ -1438,7 +1647,7 @@ tarteaucitron.services.googlemapssearch = {
     "key": "googlemapssearch",
     "type": "api",
     "name": "Google Maps Search API",
-    "uri": "https://adssettings.google.com/",
+    "uri": "https://policies.google.com/privacy",
     "needConsent": true,
     "cookies": ['nid'],
     "js": function () {
@@ -1470,7 +1679,7 @@ tarteaucitron.services.googlemapsembed = {
     "key": "googlemapsembed",
     "type": "api",
     "name": "Google Maps Embed",
-    "uri": "https://adssettings.google.com/",
+    "uri": "https://policies.google.com/privacy",
     "needConsent": true,
     "cookies": ['apisid', 'hsid', 'nid', 'sapisid', 'sid', 'sidcc', 'ssid', '1p_jar'],
     "js": function () {
@@ -1499,7 +1708,7 @@ tarteaucitron.services.googletagmanager = {
     "key": "googletagmanager",
     "type": "api",
     "name": "Google Tag Manager",
-    "uri": "https://adssettings.google.com/",
+    "uri": "https://policies.google.com/privacy",
     "needConsent": true,
     "cookies": ['_ga', '_gat', '__utma', '__utmb', '__utmc', '__utmt', '__utmz', '__gads', '_drt_', 'FLC', 'exchange_uid', 'id', 'fc', 'rrs', 'rds', 'rv', 'uid', 'UIDR', 'UID', 'clid', 'ipinfo', 'acs'],
     "js": function () {
@@ -1521,7 +1730,7 @@ tarteaucitron.services.multiplegoogletagmanager = {
   "key": "multiplegoogletagmanager",
   "type": "api",
   "name": "Google Tag Manager",
-  "uri": "https://adssettings.google.com/",
+  "uri": "https://policies.google.com/privacy",
   "needConsent": true,
   "cookies": ['_ga', '_gat', '__utma', '__utmb', '__utmc', '__utmt', '__utmz', '__gads', '_drt_', 'FLC', 'exchange_uid', 'id', 'fc', 'rrs', 'rds', 'rv', 'uid', 'UIDR', 'UID', 'clid', 'ipinfo', 'acs'],
   "js": function () {
@@ -1547,7 +1756,7 @@ tarteaucitron.services.googlefonts = {
   "key": "googlefonts",
   "type": "api",
   "name": "Google Webfonts",
-  "uri": "https://www.google.com/intl/de/policies/privacy/",
+  "uri": "https://policies.google.com/privacy",
   "needConsent": true,
   "cookies": [],
   "js": function () {
@@ -1576,6 +1785,52 @@ tarteaucitron.services.hubspot = {
     "js": function () {
         "use strict";
         tarteaucitron.addScript('//js.hs-scripts.com/' + tarteaucitron.user.hubspotId + '.js', 'hs-script-loader');
+    }
+};
+
+// instagram
+tarteaucitron.services.instagram = {
+    "key": "instagram",
+    "type": "social",
+    "name": "Instagram",
+    "uri": "https://www.instagram.com/legal/privacy/",
+    "needConsent": true,
+    "cookies": ['shbts', 'sessionid', 'csrftoken', 'rur', 'shbid', 'mid', 'ds_usr_id', 'ig_did', 'ig_cb', 'datr'],
+    "js": function () {
+        "use strict";
+        tarteaucitron.fallback(['instagram_post'], function (x) {
+            var post_id = x.getAttribute("postId"),
+                embed_width = x.getAttribute("width"),
+                frame_width = 'width=',
+                embed_height = x.getAttribute("height"),
+                frame_height = 'height=',
+                post_frame;
+
+            if (post_id === undefined) {
+                return "";
+            }
+            if (embed_width !== undefined) {
+                frame_width += '"' + embed_width + '" ';
+            } else {
+                frame_width += '"" ';
+            }
+            if (embed_height !== undefined) {
+                frame_height +=  '"' + embed_height + '" ';
+            } else {
+                frame_height += '"" ';
+            }
+            post_frame = '<iframe src="//www.instagram.com/' + post_id + '/embed" ' + frame_width + frame_height + ' frameborder="0"></iframe>';
+            return post_frame;
+        });
+    },
+    "fallback": function () {
+        "use strict";
+        var id = 'instagram';
+        tarteaucitron.fallback(['instagram_post'], function (elem) {
+            elem.style.width = elem.getAttribute('width') + 'px';
+            elem.style.height = elem.getAttribute('height') + 'px';
+            return tarteaucitron.engage(id);
+        });
     }
 };
 
@@ -2069,7 +2324,8 @@ tarteaucitron.services.soundcloud = {
                 showUser      = x.getAttribute('data-show-user'),
                 showReposts   = x.getAttribute('data-show-reposts'),
                 showTeaser    = x.getAttribute('data-show-teaser'),
-                visual        = x.getAttribute('data-visual');
+                visual        = x.getAttribute('data-visual'),
+                artwork       = x.getAttribute('data-artwork');
 
             var allowAutoplay = autoplay === 'true' ? 'allow="autoplay"' : '';
 
@@ -2078,15 +2334,16 @@ tarteaucitron.services.soundcloud = {
             }
 
             var qs = '?url=https%3A//api.soundcloud.com/' + playable_type + '/' + playable_id;
-            if (hideRelated.length > 0)  qs += '&hide_related=' + hideRelated;
-            if (color.length > 0)        qs += '&color=' + color.replace('#', '%23');
-            if (autoplay.length > 0)     qs += '&auto_play=' + autoplay;
-            if (showComments.length > 0) qs += '&show_comments=' + showComments;
-            if (hideRelated.length > 0)  qs += '&hide_related=' + hideRelated;
-            if (showUser.length > 0)     qs += '&show_user=' + showUser;
-            if (showReposts.length > 0)  qs += '&show_reposts=' + showReposts;
-            if (showTeaser.length > 0)   qs += '&show_teaser=' + showTeaser;
-            if (visual.length > 0)       qs += '&visual=' + visual;
+            if (hideRelated && hideRelated.length > 0)      qs += '&hide_related=' + hideRelated;
+            if (color && color.length > 0)                  qs += '&color=' + color.replace('#', '%23');
+            if (autoplay && autoplay.length > 0)            qs += '&auto_play=' + autoplay;
+            if (showComments && showComments.length > 0)    qs += '&show_comments=' + showComments;
+            if (hideRelated && hideRelated.length > 0)      qs += '&hide_related=' + hideRelated;
+            if (showUser && showUser.length > 0)            qs += '&show_user=' + showUser;
+            if (showReposts && showReposts.length > 0)      qs += '&show_reposts=' + showReposts;
+            if (showTeaser && showTeaser.length > 0)        qs += '&show_teaser=' + showTeaser;
+            if (visual && visual.length > 0)                qs += '&visual=' + visual;
+            if (artwork && artwork.length > 0)              qs += '&show_artwork=' + artwork;
 
             return '<iframe width="100%" ' + frame_height + ' scrolling="no" frameborder="no" ' + allowAutoplay + ' src="https://w.soundcloud.com/player/' + qs + '"></iframe>';
         });
@@ -2096,6 +2353,52 @@ tarteaucitron.services.soundcloud = {
         tarteaucitron.fallback(['soundcloud_player'], function (elem) {
             elem.style.height = elem.getAttribute('data-height') + 'px';
             return tarteaucitron.engage('soundcloud');
+        });
+    }
+};
+
+// spotify
+tarteaucitron.services.spotify = {
+    "key": "spotify",
+    "type": "video",
+    "name": "Spotify",
+    "uri": "https://www.spotify.com/us/legal/privacy-policy/",
+    "needConsent": true,
+    "cookies": ['sp_landing', '_ga', 'sp_ab', 'sp_landingref', 'sp_t', 'sp_usid', 'OptanonConsent', 'sp_m', 'spot'],
+    "js": function () {
+        "use strict";
+        tarteaucitron.fallback(['spotify_player'], function (x) {
+            var spotify_id = x.getAttribute("spotifyID"),
+                spotify_width = x.getAttribute("width"),
+                frame_width = 'width=',
+                spotify_height = x.getAttribute("height"),
+                frame_height = 'height=',
+                spotify_frame;
+
+            if (spotify_id === undefined) {
+                return "";
+            }
+            if (spotify_width !== undefined) {
+                frame_width += '"' + spotify_width + '" ';
+            } else {
+                frame_width += '"" ';
+            }
+            if (spotify_height !== undefined) {
+                frame_height +=  '"' + spotify_height + '" ';
+            } else {
+                frame_height += '"" ';
+            }
+            spotify_frame = '<iframe src="//open.spotify.com/embed/' + spotify_id + '" ' + frame_width + frame_height + ' frameborder="0" allowfullscreen></iframe>';
+            return spotify_frame;
+        });
+    },
+    "fallback": function () {
+        "use strict";
+        var id = 'spotify';
+        tarteaucitron.fallback(['spotify_player'], function (elem) {
+            elem.style.width = elem.getAttribute('width') + 'px';
+            elem.style.height = elem.getAttribute('height') + 'px';
+            return tarteaucitron.engage(id);
         });
     }
 };
@@ -2675,6 +2978,7 @@ tarteaucitron.services.atinternet = {
     "name": "AT Internet (privacy by design)",
     "uri": "https://helpcentre.atinternet-solutions.com/hc/fr/categories/360002439300-Privacy-Centre",
     "needConsent": false,
+    "safeanalytic": true,
     "cookies": ['atidvisitor', 'atreman', 'atredir', 'atsession', 'atuserid'],
     "js": function () {
         "use strict";
@@ -2684,12 +2988,106 @@ tarteaucitron.services.atinternet = {
 
         tarteaucitron.addScript(tarteaucitron.user.atLibUrl, '', function() {
 
-            var tag = new ATInternet.Tracker.Tag();
+            window.tag = new ATInternet.Tracker.Tag();
 
             if (typeof tarteaucitron.user.atMore === 'function') {
                 tarteaucitron.user.atMore();
             }
-        })
+
+            if (typeof window.tag.privacy !== 'undefined') {
+
+                document.getElementById('atinternetLine').style.display = 'none';
+
+                if (tarteaucitron.cookie.read().indexOf('atinternetoptin=true') === -1 && tarteaucitron.cookie.read().indexOf('atinternetoptout=true') === -1) {
+                     window.tag.privacy.setVisitorMode('cnil', 'exempt');
+                }
+
+                tarteaucitron.addClickEventToElement(document.getElementById('atinternetDenied'), function () {
+                    tarteaucitron.launch['atinternetoptout'] = false;
+                    tarteaucitron.launch['atinternetoptin'] = false;
+                    tarteaucitron.userInterface.respond(document.getElementById('atinternetoptinDenied'), false);
+                    tarteaucitron.userInterface.respond(document.getElementById('atinternetoptoutDenied'), false);
+                });
+
+                tarteaucitron.addClickEventToElement(document.getElementById('atinternetoptoutDenied'), function () {
+                     if (tarteaucitron.cookie.read().indexOf('atinternetoptin=true') === -1 && tarteaucitron.cookie.read().indexOf('atinternetoptout=true') === -1) {
+                         window.tag.privacy.setVisitorMode('cnil', 'exempt');
+                     }
+                });
+
+                tarteaucitron.addClickEventToElement(document.getElementById('atinternetoptinDenied'), function () {
+                     if (tarteaucitron.cookie.read().indexOf('atinternetoptin=true') === -1 && tarteaucitron.cookie.read().indexOf('atinternetoptout=true') === -1) {
+                         window.tag.privacy.setVisitorMode('cnil', 'exempt');
+                     }
+                });
+            }
+
+            setTimeout(function() {
+                tag.page.send();
+            }, 70);
+        });
+    }
+};
+
+// AT Internet (optin)
+tarteaucitron.services.atinternetoptin = {
+    "key": "atinternetoptin",
+    "type": "analytic",
+    "name": "AT Internet",
+    "uri": "https://helpcentre.atinternet-solutions.com/hc/fr/categories/360002439300-Privacy-Centre",
+    "needConsent": true,
+    "cookies": ['atidvisitor', 'atreman', 'atredir', 'atsession', 'atuserid'],
+    "js": function () {
+        "use strict";
+        tarteaucitron.launch['atinternetoptout'] = false;
+        
+        setTimeout(function() {
+            tarteaucitron.userInterface.respond(document.getElementById('atinternetAllowed'), true);
+            tarteaucitron.userInterface.respond(document.getElementById('atinternetoptoutDenied'), false);
+        }, 50);
+
+        setTimeout(function() {
+            if (typeof window.tag.privacy !== 'undefined') {
+               window.tag.privacy.setVisitorOptin();
+            }
+        }, 60);
+
+        window.tarteaucitronHackNoSwitch = true;
+        setTimeout(function() {window.tarteaucitronHackNoSwitch = false;}, 200);
+    }
+};
+
+// AT Internet (optout)
+tarteaucitron.services.atinternetoptout = {
+    "key": "atinternetoptout",
+    "type": "analytic",
+    "name": "AT Internet [minimal]",
+    "uri": "https://helpcentre.atinternet-solutions.com/hc/fr/categories/360002439300-Privacy-Centre",
+    "needConsent": true,
+    "cookies": ['atidvisitor', 'atreman', 'atredir', 'atsession', 'atuserid'],
+    "js": function () {
+        "use strict";
+
+        // hack accept all
+        if (window.tarteaucitronHackNoSwitch) {
+            setTimeout(function() {
+                tarteaucitron.userInterface.respond(document.getElementById('atinternetoptoutDenied'), false);
+            }, 60);
+            return;
+        }
+
+        tarteaucitron.launch['atinternetoptin'] = false;
+
+        setTimeout(function() {
+             tarteaucitron.userInterface.respond(document.getElementById('atinternetAllowed'), true);
+             tarteaucitron.userInterface.respond(document.getElementById('atinternetoptinDenied'), false);
+        }, 50);
+
+        setTimeout(function() {
+            if (typeof window.tag.privacy !== 'undefined') {
+               window.tag.privacy.setVisitorOptout();
+            }
+        }, 60);
     }
 };
 
@@ -2892,7 +3290,7 @@ tarteaucitron.services.facebookpixel = {
     "key": "facebookpixel",
     "type": "ads",
     "name": "Facebook Pixel",
-    "uri": "https://fr-fr.facebook.com/business/help/www/651294705016616",
+    "uri": "https://www.facebook.com/policy.php",
     "needConsent": true,
     "cookies": ['datr', 'fr', 'reg_ext_ref', 'reg_fb_gate', 'reg_fb_ref', 'sb', 'wd', 'x-src'],
     "js": function () {
@@ -3195,7 +3593,7 @@ tarteaucitron.services.hotjar = {
     "name": "Hotjar",
     "uri": "https://help.hotjar.com/hc/en-us/categories/115001323967-About-Hotjar",
     "needConsent": true,
-    "cookies": ["hjClosedSurveyInvites", "_hjDonePolls", "_hjMinimizedPolls", "_hjDoneTestersWidgets", "_hjMinimizedTestersWidgets", "_hjDoneSurveys", "_hjIncludedInSample", "_hjShownFeedbackMessage"],
+    "cookies": ["hjClosedSurveyInvites", "_hjDonePolls", "_hjMinimizedPolls", "_hjDoneTestersWidgets", "_hjMinimizedTestersWidgets", "_hjDoneSurveys", "_hjIncludedInSample", "_hjShownFeedbackMessage", "_hjAbsoluteSessionInProgress", "_hjIncludeInPageviewSample", "_hjid"],
     "js": function () {
         "use strict";
         if (tarteaucitron.user.hotjarId === undefined || tarteaucitron.user.HotjarSv === undefined) {
@@ -3505,4 +3903,3 @@ tarteaucitron.services.woopra = {
 		woopra.track();
     }
 };
-
